@@ -29,6 +29,7 @@ class _MyAppState extends State<MyApp> {
                       onChanged: print,
                       // Initial selection and favorite can be one of code ('IT') OR dial_code('+39')
                       initialSelection: 'IT',
+                     // selectedPhoneNumber: '+37369817705',
                       favorite: ['+39', 'FR']),
                   SizedBox(
                     width: 400,

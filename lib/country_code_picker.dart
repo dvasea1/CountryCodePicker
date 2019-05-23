@@ -9,7 +9,9 @@ export 'country_code.dart';
 
 class CountryCodePicker extends StatefulWidget {
   final ValueChanged<CountryCode> onChanged;
+  final ValueChanged<String> onPhoneParsed;
   final String initialSelection;
+  final String selectedPhoneNumber;
   final List<String> favorite;
   final TextStyle textStyle;
   final EdgeInsetsGeometry padding;
@@ -31,6 +33,8 @@ class CountryCodePicker extends StatefulWidget {
   CountryCodePicker({
     this.onChanged,
     this.initialSelection,
+    this.selectedPhoneNumber,
+    this.onPhoneParsed,
     this.favorite = const [],
     this.textStyle,
     this.padding = const EdgeInsets.all(0.0),
@@ -103,16 +107,30 @@ class _CountryCodePickerState extends State<CountryCodePicker> {
 
   @override
   initState() {
-    if (widget.initialSelection != null) {
-      selectedItem = elements.firstWhere(
-          (e) =>
-              (e.code.toUpperCase() == widget.initialSelection.toUpperCase()) ||
-              (e.dialCode == widget.initialSelection.toString()),
-          orElse: () => elements[0]);
+    if(widget.selectedPhoneNumber != null) {
+       elements.map((CountryCode c) {
+        if(widget.selectedPhoneNumber.startsWith(c.dialCode)){
+          selectedItem = c;
+          if(widget.onPhoneParsed != null)
+            widget.onPhoneParsed(widget.selectedPhoneNumber.replaceAll(c.dialCode, ''));
+          return;
+        }
+      }).toList();
+       if(selectedItem == null){
+         selectedItem = elements[0];
+       }
     } else {
-      selectedItem = elements[0];
+      if (widget.initialSelection != null) {
+        selectedItem = elements.firstWhere(
+                (e) =>
+            (e.code.toUpperCase() == widget.initialSelection.toUpperCase()) ||
+                (e.dialCode == widget.initialSelection.toString()),
+            orElse: () => elements[0]);
+      } else {
+        selectedItem = elements[0];
+      }
     }
-
+    
     favoriteElements = elements
         .where((e) =>
             widget.favorite.firstWhere(
